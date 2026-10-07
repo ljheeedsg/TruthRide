@@ -1,0 +1,16 @@
+[
+  {
+    "run_index": 1,
+    "seed": 10,
+    "total_tasks": 2000,
+    "target_tasks": 2000,
+    "candidate_slot_count": 4462,
+    "total_capacity": 22231,
+    "regions_with_tasks": 35,
+    "avg_tasks_per_active_region": 57.1429,
+    "max_tasks_in_region": 423,
+    "avg_required_workers": 1.0,
+    "max_required_workers": 1,
+    "avg_task_weight": 1.9959
+  }
+]

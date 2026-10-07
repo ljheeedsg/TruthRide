@@ -1,0 +1,20 @@
+{
+  "total_tasks": 2000,
+  "target_tasks": 2000,
+  "candidate_slot_count": 6893,
+  "total_capacity": 28216,
+  "regions_with_tasks": 71,
+  "avg_tasks_per_active_region": 28.169,
+  "max_tasks_in_region": 194,
+  "avg_required_workers": 1.0,
+  "max_required_workers": 1,
+  "avg_task_weight": 1.9973,
+  "num_experiment_runs": 1,
+  "experiment_seeds": [
+    10
+  ],
+  "downstream_output_seed": 10,
+  "dataset_name": "rome",
+  "slot_sec": 375,
+  "total_slots": 144
+}

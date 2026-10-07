@@ -1,0 +1,16 @@
+[
+  {
+    "run_index": 1,
+    "seed": 10,
+    "total_workers": 284,
+    "trusted_count": 57,
+    "unknown_count": 113,
+    "malicious_count": 114,
+    "trusted_ratio": 0.2007,
+    "malicious_ratio": 0.4014,
+    "avg_base_quality_all": 0.5381,
+    "avg_base_quality_trusted": 0.8524,
+    "avg_base_quality_unknown": 0.7713,
+    "avg_base_quality_malicious": 0.1498
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "run_index": 1,
+    "seed": 10,
+    "total_workers": 300,
+    "trusted_count": 60,
+    "unknown_count": 120,
+    "malicious_count": 120,
+    "trusted_ratio": 0.2,
+    "avg_base_quality_all": 0.5361,
+    "avg_base_quality_trusted": 0.8523,
+    "avg_base_quality_unknown": 0.7589,
+    "avg_base_quality_malicious": 0.1551,
+    "total_task_options": 27414,
+    "avg_task_options_per_worker": 91.38,
+    "avg_option_quality": 0.533,
+    "avg_abs_data_error": 0.174,
+    "avg_abs_data_error_trusted": 0.0222,
+    "avg_abs_data_error_unknown": 0.0388,
+    "avg_abs_data_error_malicious": 0.3809
+  }
+]
