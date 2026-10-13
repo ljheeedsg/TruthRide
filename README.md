@@ -94,7 +94,7 @@ The recruitment and learning modules use only platform-observable information: w
 q_tilde_ij = 1 - min(1, abs(x_ij - ref_j) / sigma0)
 ```
 
-Here, `ref_j` is the median of other trusted reports on the same task, or of other non-malicious peers. The ground-truth value `v_j` and simulated sensing quality `q_ij` are used only for data generation and evaluation. Set `QUALITY_FEEDBACK = "oracle"` in `experiment2_core_config.py` to reproduce the oracle upper bound.
+Here, `ref_j` is the median of reports from other workers currently classified as trusted by the platform. If no such reports are available, it is the median of reports from other workers not currently classified as malicious. If no eligible peer report is available, no observable quality update is produced. The ground-truth value `v_j` and simulated sensing quality `q_ij` are used by the simulator to generate reports and for offline evaluation; they are not provided to the default observable recruitment or learning path. Setting `QUALITY_FEEDBACK = "oracle"` enables an explicit oracle-feedback diagnostic that uses simulator-generated quality feedback. This is a reference condition, not an end-to-end performance upper bound.
 
 ## Main configuration switches
 
@@ -102,7 +102,7 @@ The following options are defined in `experiment2_core_config.py`:
 
 | Key | Default | Meaning |
 |---|---|---|
-| `QUALITY_FEEDBACK` | `observable` | `observable` (IEWV) or `oracle` (upper bound) |
+| `QUALITY_FEEDBACK` | `observable` | `observable` (IEWV) or `oracle` (diagnostic reference) |
 | `QUALITY_ERROR_SCALE` | `0.5` | Error scale `sigma0` for observable quality |
 | `SELECTION_VALUE_FUNCTION` | `linear` | Recruitment value function: `linear`, `sigmoid`, or `hard` |
 | `VALUE_FUNCTION` | `sigmoid` | Platform quality-value function used for evaluation |

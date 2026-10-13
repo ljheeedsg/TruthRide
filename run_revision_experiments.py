@@ -50,15 +50,15 @@ def set_dataset(dataset):
     """配置模块在 import 时读取数据集名，这里切换数据集后重新加载相关模块。"""
     import importlib
     os.environ["TRUTHRIDE_DATASET"] = dataset
-    import experiment2_core_config as cfg
+    import experiment2_重构_配置 as cfg
     importlib.reload(cfg)
-    import experiment2_core_main as main_mod
+    import experiment2_重构_main as main_mod
     importlib.reload(main_mod)
     return main_mod.run_experiment
 
 
 def run_one(run_experiment, dataset, mode, out_dir, overrides=None, tag=None):
-    from experiment2_core_config import MODE_OUTPUTS
+    from experiment2_重构_配置 import MODE_OUTPUTS
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

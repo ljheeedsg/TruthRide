@@ -1,4 +1,4 @@
-from experiment2_core_main import build_config, run_experiment, run_single_experiment as _run_single
+from experiment2_重构_main import build_config, run_experiment, run_single_experiment as _run_single
 
 
 MODE = "pgrd"

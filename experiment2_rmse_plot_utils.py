@@ -108,7 +108,100 @@ def _median(values):
     return (ordered[mid - 1] + ordered[mid]) / 2.0
 
 
-def compute_rmse_series(round_results, tasks_by_slot, task_detail_map, trusted_reference_map):
+def compute_task_error_records(round_result, task_detail_map):
+    """Offline Fig. 4/5 errors for exactly evaluate_round's covered tasks.
+
+    executed_by is the authoritative normal-sensing worker list. Verification
+    labels/references never add, remove, or reweight tasks or reports here.
+    Missing/mismatched input is an error, not a reason to silently drop a task.
+    """
+    slot_id = int(round_result["slot_id"])
+    context = f"round {round_result['round_id']}, slot {slot_id}"
+    if "task_results" not in round_result:
+        raise ValueError(f"{context}: task_results required for task-ground-truth RMSE")
+
+    records = []
+    seen_task_ids = set()
+    for task in round_result["task_results"]:
+        task_id = task["task_id"]
+        if task_id in seen_task_ids:
+            raise ValueError(f"{context}: duplicate task {task_id!r}")
+        seen_task_ids.add(task_id)
+        if not task["covered"]:
+            continue
+        label = f"{context}, task {task_id!r}"
+        if int(task["slot_id"]) != slot_id:
+            raise ValueError(f"{label}: task-result slot mismatch")
+        worker_ids = task.get("executed_by", [])
+        if not worker_ids:
+            raise ValueError(f"{label}: covered task has no executed_by workers")
+
+        reports = []
+        truths = []
+        for worker_id in worker_ids:
+            detail = task_detail_map.get(int(worker_id), {}).get(task_id)
+            if detail is None:
+                raise ValueError(f"{label}: missing executed report for worker {worker_id}")
+            if detail.get("task_id") != task_id or int(detail["slot_id"]) != slot_id:
+                raise ValueError(f"{label}: report task/slot mismatch for worker {worker_id}")
+            try:
+                report = float(detail["task_data"])
+                truth = float(detail["true_value"])
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(f"{label}: invalid task_data/true_value for worker {worker_id}") from exc
+            if not math.isfinite(report) or not math.isfinite(truth):
+                raise ValueError(f"{label}: non-finite task_data/true_value for worker {worker_id}")
+            reports.append(report)
+            truths.append(truth)
+        if any(truth != truths[0] for truth in truths[1:]):
+            raise ValueError(f"{label}: inconsistent true_value across executed workers")
+
+        estimate = math.fsum(reports) / len(reports)
+        squared_error = (estimate - truths[0]) ** 2
+        if not math.isfinite(squared_error):
+            raise ValueError(f"{label}: non-finite squared error")
+        records.append({
+            "task_id": task_id,
+            "executed_by": list(worker_ids),
+            "task_estimate": estimate,
+            "true_value": truths[0],
+            "squared_error": squared_error,
+        })
+    return records
+
+
+def _compute_task_rmse_series(round_results, task_detail_map):
+    rounds, per_round_rmse, cumulative_rmse = [], [], []
+    cumulative_squared_error = 0.0
+    cumulative_task_count = 0
+    for round_result in round_results:
+        records = compute_task_error_records(round_result, task_detail_map)
+        squared_error = math.fsum(record["squared_error"] for record in records)
+        task_count = len(records)
+        cumulative_squared_error += squared_error
+        cumulative_task_count += task_count
+        # Retain the existing empty-round display convention; no dummy task or
+        # zero-error sample is ever added to the cumulative denominator.
+        per_round = math.sqrt(squared_error / task_count) if task_count else 0.0
+        cumulative = (
+            math.sqrt(cumulative_squared_error / cumulative_task_count)
+            if cumulative_task_count else 0.0
+        )
+        rounds.append(int(round_result["round_id"]))
+        per_round_rmse.append(round(per_round, 4))
+        cumulative_rmse.append(round(cumulative, 4))
+    return rounds, per_round_rmse, cumulative_rmse
+
+
+def compute_rmse_series(
+    round_results, tasks_by_slot, task_detail_map, trusted_reference_map,
+    *, task_ground_truth=False,
+):
+    # Only Fig. 4/5 opt in. Other callers (e.g. grid sensitivity plots) retain
+    # their existing reference-consistency metric and output unchanged.
+    if task_ground_truth:
+        return _compute_task_rmse_series(round_results, task_detail_map)
+
     rounds = []
     per_round_rmse = []
     cumulative_rmse = []

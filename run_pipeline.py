@@ -29,7 +29,7 @@ def build_dataset(dataset, trusted_ratio=None, malicious_ratio=None, out_dir=Non
     env = dict(os.environ, TRUTHRIDE_DATASET=dataset, TRUTHRIDE_BASEMAP="0", MPLBACKEND="Agg")
 
     step1 = [
-        sys.executable, "experiment2_step1_generate_worker_data.py",
+        sys.executable, "experiment2_第1步产生车数据.py",
         "--output-seg", out / "experiment2_vehicle.csv",
         "--output-plot", out / "experiment2_grid_partition.png",
         "--summary-file", out / "experiment2_vehicle_summary.json",
@@ -43,7 +43,7 @@ def build_dataset(dataset, trusted_ratio=None, malicious_ratio=None, out_dir=Non
     run(step1, env)
 
     run([
-        sys.executable, "experiment2_step2_generate_task_data.py",
+        sys.executable, "experiment2_第2步产生任务数据.py",
         "--vehicle-file", out / "experiment2_vehicle.csv",
         "--vehicle-summary-file", out / "experiment2_vehicle_summary.json",
         "--task-csv", out / "experiment2_tasks.csv",
@@ -55,7 +55,7 @@ def build_dataset(dataset, trusted_ratio=None, malicious_ratio=None, out_dir=Non
     ], env)
 
     run([
-        sys.executable, "experiment2_step3_generate_worker_options.py",
+        sys.executable, "experiment2_第3步产生工人可选项.py",
         "--vehicle-file", out / "experiment2_vehicle.csv",
         "--task-file", out / "experiment2_tasks.csv",
         "--task-summary-file", out / "experiment2_tasks_summary.json",
